@@ -1,0 +1,67 @@
+1. Ticketing System (Employee Side)
+
+    Name - User Inserted
+    Date - Auto
+    Time - Auto
+    Email - User Input
+    Phone - User Input
+    Department - Selectbox
+    Software/Hardware - Select Menu
+    Detailed Select - Based on Previous
+    Problem Description - Short
+    Deeper Details - Optional
+    
+
+    Post-Submit:
+        ID Created ( increase randomness )
+        Date Assigned
+        Time Assigned 
+        Computer Number - Autoassigned based on email
+        Ticket - New by Default
+
+    Process Flow: 
+    Ticket Created -> Info Added -> Added to tickets.json
+
+2. Ticket Viewer (Personal View for IT Analysts or Support Desk)
+
+    IT Analyst sees assigned tickets and due dates
+        Low: 7 days
+        Mid: 3 days
+        High: 1 day
+        Critical: 4 Hours
+    TicketID
+    Severity
+    Subject
+    Reporter
+    Subject
+    Department
+    Computer Number
+    Email
+    Phone
+
+3. Overall View of all Open Tickets (Admin view)
+
+    TicketID
+    Reporter
+    Subject
+    Assignee
+        If Unassigned:
+            IT Supervisor is able to manually assign. 
+    Status
+    Date + Time
+    Due Date
+    Severity
+        Low-Mid: Unassigned by Default
+        High: Not assignable to Level 1
+        Critical: Auto-assigned to Supervisor
+
+4. KPI Tracker (Admin View)
+
+    Status of all created tickets
+    Open tickets by Analysts
+    Solved Tickets per month by Analyst
+    Opened Time
+    Resolution Time
+
+    
+

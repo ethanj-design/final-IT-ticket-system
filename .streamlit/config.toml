@@ -1,0 +1,13 @@
+[theme]
+
+base = "light"
+primaryColor = "#52c67eff"
+backgroundColor = "#1a1919ff"
+secondaryBackgroundColor = "#434242ff"
+textColor = "#f2f0ef"
+font = "'Outfit':https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap"
+
+
+baseFontSize = 15
+headingFontSizes = "2rem"
+headingFontWeights = 700

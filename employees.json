@@ -1,0 +1,35 @@
+[
+    {
+        "employee_id": "EM-1001",
+        "email": "ethan@fakecorp.com",
+        "password": "fakepassword",
+        "phone": "302-888-6761",
+        "name": "Ethan Mlynarczyk",
+        "department": "it",
+        "role": "supervisor",
+        "computer": "PC_OO26",
+        "status": "active"
+    },
+    {
+        "employee_id": "b0ee6746-53e3-4dde-b8e1-054552f66b03",
+        "email": "harsha@fakecorp.com",
+        "password": "fakepass",
+        "phone": "333-999-5567",
+        "name": "Harsha Rao",
+        "department": "pmo office",
+        "role": "manager",
+        "computer": "PC_0345",
+        "status": "active"
+    },
+    {
+        "employee_id": "b9557a1b-9087-47ac-a803-dcd9ee2d9744",
+        "email": "adrian@fakecorp.com",
+        "password": "meow",
+        "phone": "215-868-2968",
+        "name": "Adrian Castro",
+        "department": "accounting",
+        "role": "partner",
+        "computer": "PC_0004",
+        "status": "active"
+    }
+]
