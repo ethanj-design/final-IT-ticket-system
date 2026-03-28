@@ -4,6 +4,13 @@ import time
 from datetime import datetime
 from pathlib import Path
 import uuid
+import pandas as pd 
+
+st.set_page_config(layout="wide")
+
+assginee_list = ["None"]
+
+
 
 # format phone numbers
 def format_phone(number):
@@ -44,7 +51,9 @@ employees = load_json("employees.json")
 tickets = load_json("tickets.json")
 # --------------------------------------------------
 
-
+for e in employees:
+    if e["department"] == "it":
+        assginee_list.append(e["name"])
 
 # Set session state
 if "page" not in st.session_state:
@@ -70,7 +79,6 @@ if st.session_state["role"] == "staff" or st.session_state["role"] == "partner" 
 
     st.markdown("Ticket Creation Form")
 
-
     # TICKET CREATOR FORM -----------------------------------------------------------------------------------------------------
 
     with st.container(border=False):
@@ -94,6 +102,7 @@ if st.session_state["role"] == "staff" or st.session_state["role"] == "partner" 
         ticket_submit_btn = st.button("Submit Ticket",use_container_width=True)
 
 # TICKET CREATOR FORM -----------------------------------------------------------------------------------------------------
+# CRUD SECTION ------------------------------------------------------------------------------------------------------------
 
     if ticket_submit_btn:
 
@@ -144,10 +153,9 @@ if st.session_state["role"] == "staff" or st.session_state["role"] == "partner" 
         overwrite_json("tickets.json", tickets)
         st.success(f"Ticket {ticket_id} created successfully!")
         wait_rerun()
+# CRUD SECTION ------------------------------------------------------------------------------------------------------------
 
-
-if st.session_state["role"] == "supervisor":
-
+if st.session_state["role"] == "supervisor" and st.session_state["page"] == "supervisor_make_acct":
 
     #CREATE A NEW PROFILE ------------------------------------------------------------------------------------------------------
     st.markdown(f"### Welcome Back, {st.session_state['user']}")
@@ -218,9 +226,8 @@ if st.session_state["role"] == "supervisor":
                     st.success("Record created! User can now access TicketLive.")
                     time.sleep(3)
                     wait_rerun()
+
     #CREATE A NEW PROFILE END ---------------------------------------------------------------------------------------------------
-
-
 
 # Login Page 
 if st.session_state["logged_in"] == False:
@@ -265,6 +272,8 @@ if st.session_state["logged_in"] == False:
                     st.session_state["user"] = found_user["name"]
                     st.session_state["role"] = found_user["role"]
                     st.session_state["logged_in"] = True
+                    if st.session_state["role"] == "supervisor":
+                        st.session_state["page"] == "supervisor_main"
                     wait_rerun()
                 else:
                     st.error("Invalid credentials!")
@@ -285,6 +294,81 @@ else:
                 st.success("Logged out!")
                 wait_rerun()
 
+        switch_view = st.button("Switch View", type="primary")
+        if switch_view:
+            with st.spinner("Waiting..."):
+                if st.session_state["page"] != "supervisor_make_acct":
+                    st.session_state["page"] = "supervisor_make_acct"
+                    wait_rerun()
+                else:
+                    st.session_state["page"] = "supervisor_main"
+                    wait_rerun()
 
 
 
+
+if st.session_state["role"] == "supervisor" and st.session_state["page"] == "supervisor_main":
+
+    with st.container(border=False,width="stretch"):
+
+        search1, search2, search3, search4 = st.columns([1,1,1,1,])
+
+        with search1:
+            search_assignee = st.selectbox("Assignee", assginee_list,key="search_assignee")
+        with search2:
+            search_severity = st.selectbox("Severity", ["All", "Low", "Medium", "High", "Severe"],key="search_severity")
+        with search3: 
+            search_department = st.selectbox("Department", ["All", "Accounting", "Marketing", "IT", "PMO Office"],key="search_department")
+        with search4:
+            search_status = st.selectbox("Status", ["All", "New", "Open", "Resolved"],key="search_status")
+
+    filtered_tickets = [
+        t for t in tickets
+        if (search_assignee == "None" or t["assignee"] == search_assignee)
+        and (search_severity == "All" or t["severity"] == search_severity)
+        and (search_department == "All" or t["department"] == search_department.lower())
+        and (search_status == "All" or t["status"] == search_status)
+    ]
+
+    st.write(f"{len(filtered_tickets)} ticket(s) found")
+
+    with st.container(border=True):
+
+        h1, h2, h3, h4, h5, h6, h7 = st.columns([1,1,1,1,1,1,1])
+        h1.write("ID")
+        h2.write("Description")
+        h3.write("Assignee")
+        h4.write("Email")
+        h5.write("Department")
+        h6.write("Severity")
+        h7.write("")
+
+        if not filtered_tickets:
+            st.info("No tickets match your filters.")
+
+        for t in filtered_tickets:
+            col1, col2, col3, col4, col5, col6, col7 = st.columns([1,1,1,1,1,1,1])
+
+            with col1:
+                st.write(t['id'])
+
+            with col2:
+                st.write(t["descriptionShort"])
+
+            with col3:
+                st.write(t["assignee"])
+
+            with col4:
+                st.write(t["email"])
+
+            with col5:
+                st.write(t["department"])
+
+            with col6:
+                st.write(t["severity"])
+
+            with col7:
+                if st.button("Open Ticket", key=f"open_{t['id']}"):
+                    st.session_state["selected_ticket"] = t
+                    st.session_state["view"] = "ticket_detail"
+                    st.rerun()

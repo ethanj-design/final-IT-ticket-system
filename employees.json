@@ -31,5 +31,16 @@
         "role": "partner",
         "computer": "PC_0004",
         "status": "active"
+    },
+    {
+        "employee_id": "a42bc09c-1598-49bc-8bc9-781d03681d2d",
+        "email": "rpatel@fakecorp.com",
+        "password": "meow",
+        "phone": "215-677-9988",
+        "name": "Rahul Patel",
+        "department": "it",
+        "role": "analyst",
+        "computer": "PC_8872",
+        "status": "active"
     }
 ]

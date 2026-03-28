@@ -18,5 +18,25 @@
         "compNumber": "PC_0004",
         "openedTime": "N/A",
         "resolvedTime": "N/A"
+    },
+    {
+        "id": "TK-20260328171258",
+        "email": "adrian@fakecorp.com",
+        "name": "Adrian Castro",
+        "phone": "215-868-2968",
+        "date": "2026-03-28",
+        "time": "17:12:58",
+        "department": "accounting",
+        "problemType": "Hardware",
+        "application": "Monitor",
+        "descriptionShort": "Printer is out of ink, unavailable in admin closet. ",
+        "descriptionLong": "n/a",
+        "errorDescription": "n/a",
+        "assignee": "Unasaigned",
+        "status": "New",
+        "severity": "Unassigned",
+        "compNumber": "PC_0004",
+        "openedTime": "N/A",
+        "resolvedTime": "N/A"
     }
 ]
