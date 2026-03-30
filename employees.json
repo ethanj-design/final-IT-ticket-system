@@ -42,5 +42,16 @@
         "role": "analyst",
         "computer": "PC_8872",
         "status": "active"
+    },
+    {
+        "employee_id": "0c49861e-136c-4648-ab51-1f0d054c7924",
+        "email": "ctansey@udel.edu",
+        "password": "110484",
+        "phone": "302-383-5485",
+        "name": "Christopher",
+        "department": "accounting",
+        "role": "staff",
+        "computer": "PC_0002",
+        "status": "active"
     }
 ]
