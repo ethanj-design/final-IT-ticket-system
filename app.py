@@ -165,7 +165,7 @@ if st.session_state["role"] == "staff" or st.session_state["role"] == "partner" 
 # SUPERVISOR VIEWS ---------------------------------------------------------------------------------------------------------
 
 # KPIS + SEARCH ------------------------------------------------------------------------------------------------------------
-if st.session_state["role"] == "supervisor" and st.session_state["page"] == "supervisor_main":
+if st.session_state["role"] == "supervisor" and not st.session_state["page"] == "supervisor_make_acct":
 
     with st.container(border=False,width="stretch"):
 
@@ -355,8 +355,6 @@ if st.session_state["logged_in"] == False:
                     st.session_state["user"] = found_user["name"]
                     st.session_state["role"] = found_user["role"]
                     st.session_state["logged_in"] = True
-                    if st.session_state["role"] == "supervisor":
-                        st.session_state["page"] == "supervisor_main"
                     wait_rerun()
                 else:
                     st.error("Invalid credentials!")
