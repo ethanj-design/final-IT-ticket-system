@@ -6,7 +6,7 @@
         "phone": "302-888-6761",
         "name": "Ethan Mlynarczyk",
         "department": "it",
-        "role": "supervisor",
+        "role": "god",
         "computer": "PC_OO26",
         "status": "active"
     },
@@ -50,7 +50,7 @@
         "phone": "302-383-5485",
         "name": "Christopher",
         "department": "accounting",
-        "role": "staff",
+        "role": "god",
         "computer": "PC_0002",
         "status": "active"
     }

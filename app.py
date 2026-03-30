@@ -4,7 +4,6 @@ import time
 from datetime import datetime
 from pathlib import Path
 import uuid
-import pandas as pd 
 
 
 # INITIALS ----------------------------------------------------------------------------------------------------------------
@@ -165,6 +164,7 @@ if st.session_state["role"] == "staff" or st.session_state["role"] == "partner" 
 # SUPERVISOR VIEWS ---------------------------------------------------------------------------------------------------------
 
 # KPIS + SEARCH ------------------------------------------------------------------------------------------------------------
+
 if st.session_state["role"] == "supervisor" and not st.session_state["page"] == "supervisor_make_acct":
 
     with st.container(border=False,width="stretch"):
@@ -375,7 +375,7 @@ else:
                 st.success("Logged out!")
                 wait_rerun()
 
-        switch_view = st.button("Switch View", type="primary")
+        switch_view = st.button("Switch Supervisor View", type="primary")
         if switch_view:
             with st.spinner("Waiting..."):
                 if st.session_state["page"] != "supervisor_make_acct":
@@ -384,15 +384,14 @@ else:
                 else:
                     st.session_state["page"] = "supervisor_main"
                     wait_rerun()
-
-
-
-
-
-
-
-
-
-
-
+        
+        if st.button("Ticket View"):
+            st.session_state["role"] = "staff"
+            wait_rerun()
+        if st.button("Analyst View"):
+            st.session_state["role"] = "analyst"
+            wait_rerun()
+        if st.button("Supervisor Views"):
+            st.session_state["role"] = "supervisor"
+            wait_rerun()
 
