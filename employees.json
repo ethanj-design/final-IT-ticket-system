@@ -1,8 +1,8 @@
 [
     {
         "employee_id": "EM-1001",
-        "email": "ethan@fakecorp.com",
-        "password": "fakepassword",
+        "email": "supervisor",
+        "password": "meow",
         "phone": "302-888-6761",
         "name": "Ethan Mlynarczyk",
         "department": "it",
@@ -12,12 +12,12 @@
     },
     {
         "employee_id": "b0ee6746-53e3-4dde-b8e1-054552f66b03",
-        "email": "harsha@fakecorp.com",
-        "password": "fakepass",
+        "email": "itanalyst",
+        "password": "meow",
         "phone": "333-999-5567",
         "name": "Harsha Rao",
-        "department": "pmo office",
-        "role": "manager",
+        "department": "it",
+        "role": "analyst",
         "computer": "PC_0345",
         "status": "active"
     },
@@ -34,7 +34,7 @@
     },
     {
         "employee_id": "a42bc09c-1598-49bc-8bc9-781d03681d2d",
-        "email": "rpatel@fakecorp.com",
+        "email": "rahul",
         "password": "meow",
         "phone": "215-677-9988",
         "name": "Rahul Patel",
