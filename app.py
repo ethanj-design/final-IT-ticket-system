@@ -5,6 +5,7 @@ from datetime import datetime
 from pathlib import Path
 import uuid
 
+logo_image = Path("logo_svg.svg")
 
 # INITIALS ----------------------------------------------------------------------------------------------------------------
 
@@ -197,7 +198,7 @@ if st.session_state["role"] == "supervisor" and not st.session_state["page"] == 
         h2.write("Description")
         h3.write("Assignee")
         h4.write("Email")
-        h5.write("Department")
+        h5.write("Status")
         h6.write("Severity")
         h7.write("")
 
@@ -220,7 +221,7 @@ if st.session_state["role"] == "supervisor" and not st.session_state["page"] == 
                 st.write(t["email"])
 
             with col5:
-                st.write(t["department"])
+                st.write(t["status"])
 
             with col6:
                 st.write(t["severity"])
@@ -316,16 +317,15 @@ if st.session_state["role"] == "supervisor" and st.session_state["page"] == "sup
 if st.session_state["logged_in"] == False:
 
      # TicketLive Text
-    st.markdown("TicketLive 2025")
-    st.markdown("M&C Corporation View")
+    
 
     # UI
     with st.container(border=False):
 
 
-        col1, col2, col3, = st.columns([1,4,1])
+        col1, col2, col3, = st.columns([1,1,1])
         with col2:
-             st.markdown("# Employee Login",text_alignment="center")
+            st.markdown("### Employee Login",text_alignment="center")
 
         login_email = st.text_input("Employee Email", placeholder="user@mct.com", key="login_email")
         login_password = st.text_input("Password", type="password", key="login_password")
