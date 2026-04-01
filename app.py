@@ -68,16 +68,6 @@ if "logged_in" not in st.session_state:
 
 
 
-
-# ANALYST PAGE ------------------------------------------------------------------------------------------------------------
-if st.session_state["role"] == "analyst":
-
-    st.markdown("### Analyst View Under Construction")
-# ANALYST PAGE ------------------------------------------------------------------------------------------------------------
-
-
-
-
 # TICKET CREATOR FORM -----------------------------------------------------------------------------------------------------
 if st.session_state["role"] == "staff" or st.session_state["role"] == "partner" or st.session_state["role"] == "manager":
 
@@ -387,9 +377,6 @@ else:
         
         if st.button("Ticket View"):
             st.session_state["role"] = "staff"
-            wait_rerun()
-        if st.button("Analyst View"):
-            st.session_state["role"] = "analyst"
             wait_rerun()
         if st.button("Supervisor Views"):
             st.session_state["role"] = "supervisor"
