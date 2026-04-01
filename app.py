@@ -73,80 +73,87 @@ if st.session_state["role"] == "staff" or st.session_state["role"] == "partner" 
 
     st.markdown(f"### Welcome Back, {st.session_state['user']}")
 
-    st.markdown("Ticket Creation Form")
+    tab1, tab2 = st.tabs(["Form", "AI Assistant"])
+
+    with tab1:
+        st.markdown("Ticket Creation Form")
 
 
 
-    with st.container(border=False):
+        with st.container(border=False):
 
-        st.text(f"{st.session_state["email"]}")
+            st.text(f"{st.session_state["email"]}")
 
-        tick1, tick2 = st.columns([1,1])
+            tick1, tick2 = st.columns([1,1])
 
-        with tick1:
-            ticket_device = st.selectbox("Software/Hardware", ["Software", "Hardware"],key="type_selection_ticketform")
-        with tick2:
-            if ticket_device == "Software":
-                ticket_application = st.selectbox("Details", ["Office Apps", "Email/Outlook", "Web Browser", "VPN/Remote Access", "Login Issue", "Permissions/Access", "Other"], key="software_select_ticketform")
-            else:
-                ticket_application = st.selectbox("Details", ["Laptop/Desktop", "Printer", "Monitor", "Keyboard/Mouse", "Docking Station", "Phone", "Other"], key="hardware_select_ticketform")
-        
-        short_desc = st.text_input("Short Description of the Problem (Required)", 
-                                        placeholder="Ex: Printer won't print", key="short_desc_ticketform")
-        long_desc = st.text_area("Deeper descripton of the issue (Optional)", key="long_desc_ticketform")
-        error_desc = st.text_area("Error Message (If Applicable)", placeholder="Paste here.",key="error_desc_ticketform")
-        ticket_submit_btn = st.button("Submit Ticket",use_container_width=True)
+            with tick1:
+                ticket_device = st.selectbox("Software/Hardware", ["Software", "Hardware"],key="type_selection_ticketform")
+            with tick2:
+                if ticket_device == "Software":
+                    ticket_application = st.selectbox("Details", ["Office Apps", "Email/Outlook", "Web Browser", "VPN/Remote Access", "Login Issue", "Permissions/Access", "Other"], key="software_select_ticketform")
+                else:
+                    ticket_application = st.selectbox("Details", ["Laptop/Desktop", "Printer", "Monitor", "Keyboard/Mouse", "Docking Station", "Phone", "Other"], key="hardware_select_ticketform")
+            
+            short_desc = st.text_input("Short Description of the Problem (Required)", 
+                                            placeholder="Ex: Printer won't print", key="short_desc_ticketform")
+            long_desc = st.text_area("Deeper descripton of the issue (Optional)", key="long_desc_ticketform")
+            error_desc = st.text_area("Error Message (If Applicable)", placeholder="Paste here.",key="error_desc_ticketform")
+            ticket_submit_btn = st.button("Submit Ticket",use_container_width=True)
 
 
-    if ticket_submit_btn:
+        if ticket_submit_btn:
 
-        with st.spinner("Working on submitting..."):
-            time.sleep(4)
-            required_fields_ticket = [ticket_device, ticket_application, short_desc]
+            with st.spinner("Working on submitting..."):
+                time.sleep(4)
+                required_fields_ticket = [ticket_device, ticket_application, short_desc]
 
-            if any(not field for field in required_fields_ticket):
+                if any(not field for field in required_fields_ticket):
 
-                st.error("Please input text for all required fields.")
-                wait_rerun()
-            else:
-                ticket_id = f"TK-{datetime.now().strftime('%Y%m%d%H%M%S')}" # Unique ID generator.
-                ticket_date = datetime.today().strftime("%Y-%m-%d")
-                ticket_time = time.strftime("%H:%M:%S")
+                    st.error("Please input text for all required fields.")
+                    wait_rerun()
+                else:
+                    ticket_id = f"TK-{datetime.now().strftime('%Y%m%d%H%M%S')}" # Unique ID generator.
+                    ticket_date = datetime.today().strftime("%Y-%m-%d")
+                    ticket_time = time.strftime("%H:%M:%S")
 
-                if not long_desc:
-                    long_desc = "n/a"
-                if not error_desc:
-                    error_desc = "n/a"
+                    if not long_desc:
+                        long_desc = "n/a"
+                    if not error_desc:
+                        error_desc = "n/a"
 
-            for e in employees:
-                if e["email"] == st.session_state["email"]:
-                    found_ticket_user = e
-        
-            tickets.append({
+                for e in employees:
+                    if e["email"] == st.session_state["email"]:
+                        found_ticket_user = e
+            
+                tickets.append({
 
-                "id" : ticket_id,
-                "email" : st.session_state["email"],
-                "name" : st.session_state["user"],
-                "phone" : found_ticket_user["phone"],
-                "date" : ticket_date,
-                "time" : ticket_time,
-                "department" : found_ticket_user["department"],
-                "problemType" : ticket_device,
-                "application" : ticket_application,
-                "descriptionShort" : short_desc,
-                "descriptionLong" : long_desc,
-                "errorDescription" : error_desc,
-                "assignee" : "Unasaigned",
-                "status" : "New",
-                "severity" : "Unassigned",
-                "compNumber" : found_ticket_user["computer"],
-                "openedTime" : "N/A",
-                "resolvedTime": "N/A"
-        }
-        )
-        overwrite_json("tickets.json", tickets)
-        st.success(f"Ticket {ticket_id} created successfully!")
-        wait_rerun()
+                    "id" : ticket_id,
+                    "email" : st.session_state["email"],
+                    "name" : st.session_state["user"],
+                    "phone" : found_ticket_user["phone"],
+                    "date" : ticket_date,
+                    "time" : ticket_time,
+                    "department" : found_ticket_user["department"],
+                    "problemType" : ticket_device,
+                    "application" : ticket_application,
+                    "descriptionShort" : short_desc,
+                    "descriptionLong" : long_desc,
+                    "errorDescription" : error_desc,
+                    "assignee" : "Unasaigned",
+                    "status" : "New",
+                    "severity" : "Unassigned",
+                    "compNumber" : found_ticket_user["computer"],
+                    "openedTime" : "N/A",
+                    "resolvedTime": "N/A"
+            }
+            )
+            overwrite_json("tickets.json", tickets)
+            st.success(f"Ticket {ticket_id} created successfully!")
+            wait_rerun()
+
+      
+    
+
 # TICKET SECTION -----------------------------------------------------------------------------------------------------------
 
 
@@ -381,4 +388,6 @@ else:
         if st.button("Supervisor Views"):
             st.session_state["role"] = "supervisor"
             wait_rerun()
+
+
 
