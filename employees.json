@@ -1,23 +1,23 @@
 [
     {
         "employee_id": "EM-1001",
-        "email": "ethan@fakecorp.com",
-        "password": "fakepassword",
+        "email": "supervisor",
+        "password": "meow",
         "phone": "302-888-6761",
         "name": "Ethan Mlynarczyk",
         "department": "it",
-        "role": "supervisor",
+        "role": "god",
         "computer": "PC_OO26",
         "status": "active"
     },
     {
         "employee_id": "b0ee6746-53e3-4dde-b8e1-054552f66b03",
-        "email": "harsha@fakecorp.com",
-        "password": "fakepass",
+        "email": "itanalyst",
+        "password": "meow",
         "phone": "333-999-5567",
         "name": "Harsha Rao",
-        "department": "pmo office",
-        "role": "manager",
+        "department": "it",
+        "role": "analyst",
         "computer": "PC_0345",
         "status": "active"
     },
@@ -34,13 +34,24 @@
     },
     {
         "employee_id": "a42bc09c-1598-49bc-8bc9-781d03681d2d",
-        "email": "rpatel@fakecorp.com",
+        "email": "rahul",
         "password": "meow",
         "phone": "215-677-9988",
         "name": "Rahul Patel",
         "department": "it",
         "role": "analyst",
         "computer": "PC_8872",
+        "status": "active"
+    },
+    {
+        "employee_id": "0c49861e-136c-4648-ab51-1f0d054c7924",
+        "email": "ctansey@udel.edu",
+        "password": "110484",
+        "phone": "302-383-5485",
+        "name": "Christopher",
+        "department": "accounting",
+        "role": "god",
+        "computer": "PC_0002",
         "status": "active"
     }
 ]

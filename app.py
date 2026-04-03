@@ -4,8 +4,9 @@ import time
 from datetime import datetime
 from pathlib import Path
 import uuid
-import pandas as pd 
 
+
+logo_image = Path("logo_svg.svg")
 
 # INITIALS ----------------------------------------------------------------------------------------------------------------
 
@@ -68,95 +69,124 @@ if "logged_in" not in st.session_state:
 
 
 
-
-# ANALYST PAGE ------------------------------------------------------------------------------------------------------------
-if st.session_state["role"] == "analyst":
-
-    st.markdown("### Analyst View Under Construction")
-# ANALYST PAGE ------------------------------------------------------------------------------------------------------------
-
-
-
-
 # TICKET CREATOR FORM -----------------------------------------------------------------------------------------------------
 if st.session_state["role"] == "staff" or st.session_state["role"] == "partner" or st.session_state["role"] == "manager":
 
     st.markdown(f"### Welcome Back, {st.session_state['user']}")
 
-    st.markdown("Ticket Creation Form")
+    tab1, tab2 = st.tabs(["Form", "AI Assistant"])
+    if "chat_history" not in st.session_state:
+        st.session_state["chat_history"] = []
+
+    with tab1:
+        st.markdown("Ticket Creation Form")
 
 
 
-    with st.container(border=False):
+        with st.container(border=False):
 
-        st.text(f"{st.session_state["email"]}")
+            st.text(f"{st.session_state["email"]}")
 
-        tick1, tick2 = st.columns([1,1])
+            tick1, tick2 = st.columns([1,1])
 
-        with tick1:
-            ticket_device = st.selectbox("Software/Hardware", ["Software", "Hardware"],key="type_selection_ticketform")
-        with tick2:
-            if ticket_device == "Software":
-                ticket_application = st.selectbox("Details", ["Office Apps", "Email/Outlook", "Web Browser", "VPN/Remote Access", "Login Issue", "Permissions/Access", "Other"], key="software_select_ticketform")
-            else:
-                ticket_application = st.selectbox("Details", ["Laptop/Desktop", "Printer", "Monitor", "Keyboard/Mouse", "Docking Station", "Phone", "Other"], key="hardware_select_ticketform")
-        
-        short_desc = st.text_input("Short Description of the Problem (Required)", 
-                                        placeholder="Ex: Printer won't print", key="short_desc_ticketform")
-        long_desc = st.text_area("Deeper descripton of the issue (Optional)", key="long_desc_ticketform")
-        error_desc = st.text_area("Error Message (If Applicable)", placeholder="Paste here.",key="error_desc_ticketform")
-        ticket_submit_btn = st.button("Submit Ticket",use_container_width=True)
+            with tick1:
+                ticket_device = st.selectbox("Software/Hardware", ["Software", "Hardware"],key="type_selection_ticketform")
+            with tick2:
+                if ticket_device == "Software":
+                    ticket_application = st.selectbox("Details", ["Office Apps", "Email/Outlook", "Web Browser", "VPN/Remote Access", "Login Issue", "Permissions/Access", "Other"], key="software_select_ticketform")
+                else:
+                    ticket_application = st.selectbox("Details", ["Laptop/Desktop", "Printer", "Monitor", "Keyboard/Mouse", "Docking Station", "Phone", "Other"], key="hardware_select_ticketform")
+            
+            short_desc = st.text_input("Short Description of the Problem (Required)", 
+                                            placeholder="Ex: Printer won't print", key="short_desc_ticketform")
+            long_desc = st.text_area("Deeper descripton of the issue (Optional)", key="long_desc_ticketform")
+            error_desc = st.text_area("Error Message (If Applicable)", placeholder="Paste here.",key="error_desc_ticketform")
+            ticket_submit_btn = st.button("Submit Ticket",use_container_width=True)
 
 
-    if ticket_submit_btn:
+        if ticket_submit_btn:
 
-        with st.spinner("Working on submitting..."):
-            time.sleep(4)
-            required_fields_ticket = [ticket_device, ticket_application, short_desc]
+            with st.spinner("Working on submitting..."):
+                time.sleep(4)
+                required_fields_ticket = [ticket_device, ticket_application, short_desc]
 
-            if any(not field for field in required_fields_ticket):
+                if any(not field for field in required_fields_ticket):
 
-                st.error("Please input text for all required fields.")
-                wait_rerun()
-            else:
-                ticket_id = f"TK-{datetime.now().strftime('%Y%m%d%H%M%S')}" # Unique ID generator.
-                ticket_date = datetime.today().strftime("%Y-%m-%d")
-                ticket_time = time.strftime("%H:%M:%S")
+                    st.error("Please input text for all required fields.")
+                    wait_rerun()
+                else:
+                    ticket_id = f"TK-{datetime.now().strftime('%Y%m%d%H%M%S')}" # Unique ID generator.
+                    ticket_date = datetime.today().strftime("%Y-%m-%d")
+                    ticket_time = time.strftime("%H:%M:%S")
 
-                if not long_desc:
-                    long_desc = "n/a"
-                if not error_desc:
-                    error_desc = "n/a"
+                    if not long_desc:
+                        long_desc = "n/a"
+                    if not error_desc:
+                        error_desc = "n/a"
 
-            for e in employees:
-                if e["email"] == st.session_state["email"]:
-                    found_ticket_user = e
-        
-            tickets.append({
+                for e in employees:
+                    if e["email"] == st.session_state["email"]:
+                        found_ticket_user = e
+            
+                tickets.append({
 
-                "id" : ticket_id,
-                "email" : st.session_state["email"],
-                "name" : st.session_state["user"],
-                "phone" : found_ticket_user["phone"],
-                "date" : ticket_date,
-                "time" : ticket_time,
-                "department" : found_ticket_user["department"],
-                "problemType" : ticket_device,
-                "application" : ticket_application,
-                "descriptionShort" : short_desc,
-                "descriptionLong" : long_desc,
-                "errorDescription" : error_desc,
-                "assignee" : "Unasaigned",
-                "status" : "New",
-                "severity" : "Unassigned",
-                "compNumber" : found_ticket_user["computer"],
-                "openedTime" : "N/A",
-                "resolvedTime": "N/A"
-        }
-        )
-        overwrite_json("tickets.json", tickets)
-        st.success(f"Ticket {ticket_id} created successfully!")
-        wait_rerun()
+                    "id" : ticket_id,
+                    "email" : st.session_state["email"],
+                    "name" : st.session_state["user"],
+                    "phone" : found_ticket_user["phone"],
+                    "date" : ticket_date,
+                    "time" : ticket_time,
+                    "department" : found_ticket_user["department"],
+                    "problemType" : ticket_device,
+                    "application" : ticket_application,
+                    "descriptionShort" : short_desc,
+                    "descriptionLong" : long_desc,
+                    "errorDescription" : error_desc,
+                    "assignee" : "Unasaigned",
+                    "status" : "New",
+                    "severity" : "Unassigned",
+                    "compNumber" : found_ticket_user["computer"],
+                    "openedTime" : "N/A",
+                    "resolvedTime": "N/A"
+            }
+            )
+            overwrite_json("tickets.json", tickets)
+            st.success(f"Ticket {ticket_id} created successfully!")
+            wait_rerun()
+
+    with tab2:
+        st.subheader("AI Assistant")
+        col11, col22 = st.columns([3, 1])
+        with col11:
+            st.caption("Try asking: My printer won't connect")
+        with col22:
+            if st.button("Clear Messages"):
+                st.session_state["chat_history"] = []
+                st.rerun()
+
+        with st.container(border=True, height=250):
+            for message in st.session_state["chat_history"]:
+                with st.chat_message(message["role"]):
+                    st.write(message["content"])
+
+        user_input = st.chat_input("Ask a question....")
+        if user_input:
+            with st.spinner("Thinking..."):
+                st.session_state["chat_history"].append({"role": "user", "content": user_input})
+                ai_respone = "I am working on it."
+
+                # response is generated by ai
+                st.session_state["chat_history"].append(
+                        {
+                            "role": "assistant",
+                            "content": ai_respone
+                        }
+                    )
+                time.sleep(2)
+                st.rerun()
+                
+                
+
 # TICKET SECTION -----------------------------------------------------------------------------------------------------------
 
 
@@ -165,6 +195,7 @@ if st.session_state["role"] == "staff" or st.session_state["role"] == "partner" 
 # SUPERVISOR VIEWS ---------------------------------------------------------------------------------------------------------
 
 # KPIS + SEARCH ------------------------------------------------------------------------------------------------------------
+
 if st.session_state["role"] == "supervisor" and not st.session_state["page"] == "supervisor_make_acct":
 
     with st.container(border=False,width="stretch"):
@@ -197,7 +228,7 @@ if st.session_state["role"] == "supervisor" and not st.session_state["page"] == 
         h2.write("Description")
         h3.write("Assignee")
         h4.write("Email")
-        h5.write("Department")
+        h5.write("Status")
         h6.write("Severity")
         h7.write("")
 
@@ -220,7 +251,7 @@ if st.session_state["role"] == "supervisor" and not st.session_state["page"] == 
                 st.write(t["email"])
 
             with col5:
-                st.write(t["department"])
+                st.write(t["status"])
 
             with col6:
                 st.write(t["severity"])
@@ -316,16 +347,15 @@ if st.session_state["role"] == "supervisor" and st.session_state["page"] == "sup
 if st.session_state["logged_in"] == False:
 
      # TicketLive Text
-    st.markdown("TicketLive 2025")
-    st.markdown("M&C Corporation View")
+    
 
     # UI
     with st.container(border=False):
 
 
-        col1, col2, col3, = st.columns([1,4,1])
+        col1, col2, col3, = st.columns([1,1,1])
         with col2:
-             st.markdown("# Employee Login",text_alignment="center")
+            st.markdown("### Employee Login",text_alignment="center")
 
         login_email = st.text_input("Employee Email", placeholder="user@mct.com", key="login_email")
         login_password = st.text_input("Password", type="password", key="login_password")
@@ -375,7 +405,7 @@ else:
                 st.success("Logged out!")
                 wait_rerun()
 
-        switch_view = st.button("Switch View", type="primary")
+        switch_view = st.button("Switch Supervisor View", type="primary")
         if switch_view:
             with st.spinner("Waiting..."):
                 if st.session_state["page"] != "supervisor_make_acct":
@@ -384,15 +414,10 @@ else:
                 else:
                     st.session_state["page"] = "supervisor_main"
                     wait_rerun()
-
-
-
-
-
-
-
-
-
-
-
-
+        
+        if st.button("Ticket View"):
+            st.session_state["role"] = "staff"
+            wait_rerun()
+        if st.button("Supervisor Views"):
+            st.session_state["role"] = "supervisor"
+            wait_rerun()
