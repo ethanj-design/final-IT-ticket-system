@@ -6,11 +6,13 @@ from pathlib import Path
 import uuid
 
 
+logo_image = Path("logo_svg.svg")
+
 # INITIALS ----------------------------------------------------------------------------------------------------------------
 
 st.set_page_config(layout="wide")
 
-assginee_list = ["None"]
+assignee_list = ["None", "Unassigned"]
 
 # format phone numbers
 def format_phone(number):
@@ -21,6 +23,45 @@ def format_phone(number):
         return f"{number[:3]}-{number[3:6]}-{number[6:]}"
     else:
         return number 
+
+#AI chatbot present responses
+def get_ai_response(user_input):
+    user_input = user_input.lower()
+
+    PRESET_RESPONSES = [
+        {
+            "keywords": ["printer", "print", "printing"],
+            "response": "Try restarting the printer and checking the connection. Make sure it's set as your default printer."
+        },
+        {
+            "keywords": ["vpn", "remote", "access"],
+            "response": "Make sure you're connected to the VPN. Try logging out and back in if the issue persists."
+        },
+        {
+            "keywords": ["password", "login", "signin"],
+            "response": "Try resetting your password or ensure caps lock is off."
+        },
+        {
+            "keywords": ["slow", "lag", "performance"],
+            "response": "Restart your computer and close unnecessary applications."
+        }
+    ]
+
+    best_match = None
+    best_score = 0
+
+    for item in PRESET_RESPONSES:
+        score = sum(1 for keyword in item["keywords"] if keyword in user_input)
+
+        if score > best_score:
+            best_score = score
+            best_match = item["response"]
+
+    if best_match:
+        return best_match
+    else:
+        return "I'm not sure about that issue. Please submit a ticket."
+
 
 # functions for jsons
 def wait_rerun():
@@ -48,7 +89,7 @@ tickets = load_json("tickets.json")
 # add to assignees
 for e in employees:
     if e["department"] == "it":
-        assginee_list.append(e["name"])
+        assignee_list.append(e["name"])
 
 # Set session state
 if "page" not in st.session_state:
@@ -72,7 +113,12 @@ if st.session_state["role"] == "staff" or st.session_state["role"] == "partner" 
 
     st.markdown(f"### Welcome Back, {st.session_state['user']}")
 
-    st.markdown("Ticket Creation Form")
+    tab1, tab2 = st.tabs(["Form", "AI Assistant"])
+    if "chat_history" not in st.session_state:
+        st.session_state["chat_history"] = []
+
+    with tab1:
+        st.markdown("Ticket Creation Form")
 
 
 
@@ -123,29 +169,70 @@ if st.session_state["role"] == "staff" or st.session_state["role"] == "partner" 
             
                 tickets.append({
 
-                "id" : ticket_id,
-                "email" : st.session_state["email"],
-                "name" : st.session_state["user"],
-                "phone" : found_ticket_user["phone"],
-                "date" : ticket_date,
-                "time" : ticket_time,
-                "department" : found_ticket_user["department"],
-                "problemType" : ticket_device,
-                "application" : ticket_application,
-                "descriptionShort" : short_desc,
-                "descriptionLong" : long_desc,
-                "errorDescription" : error_desc,
-                "assignee" : "Unasaigned",
-                "status" : "New",
-                "severity" : "Unassigned",
-                "compNumber" : found_ticket_user["computer"],
-                "openedTime" : "N/A",
-                "resolvedTime": "N/A"
-        }
-        )
-        overwrite_json("tickets.json", tickets)
-        st.success(f"Ticket {ticket_id} created successfully!")
-        wait_rerun()
+                    "id" : ticket_id,
+                    "email" : st.session_state["email"],
+                    "name" : st.session_state["user"],
+                    "phone" : found_ticket_user["phone"],
+                    "date" : ticket_date,
+                    "time" : ticket_time,
+                    "department" : found_ticket_user["department"],
+                    "problemType" : ticket_device,
+                    "application" : ticket_application,
+                    "descriptionShort" : short_desc,
+                    "descriptionLong" : long_desc,
+                    "errorDescription" : error_desc,
+                    "assignee" : "Unassigned",
+                    "status" : "New",
+                    "severity" : "Unassigned",
+                    "compNumber" : found_ticket_user["computer"],
+                    "openedTime" : "N/A",
+                    "resolvedTime": "N/A"
+            }
+            )
+            overwrite_json("tickets.json", tickets)
+            st.success(f"Ticket {ticket_id} created successfully!")
+            wait_rerun()
+
+    with tab2:
+        st.subheader("AI Assistant")
+        col11, col22 = st.columns([3, 1])
+
+    with col11:
+        st.caption("Try asking: My printer won't connect")
+
+    with col22:
+        if st.button("Clear Messages"):
+            st.session_state["chat_history"] = []
+            st.rerun()
+
+    # Chat display
+    with st.container(border=True, height=250):
+        for message in st.session_state["chat_history"]:
+            with st.chat_message(message["role"]):
+                st.write(message["content"])
+
+    user_input = st.chat_input("Ask a question....")
+
+    if user_input:
+        with st.spinner("Thinking..."):
+            st.session_state["chat_history"].append({
+                "role": "user",
+                "content": user_input
+            })
+
+            ai_response = get_ai_response(user_input)
+
+            st.session_state["chat_history"].append({
+                "role": "assistant",
+                "content": ai_response
+            })
+
+            time.sleep(1)
+            st.rerun()
+        
+                
+                
+
 # TICKET SECTION -----------------------------------------------------------------------------------------------------------
 
 
@@ -162,7 +249,7 @@ if st.session_state["role"] == "supervisor" and not st.session_state["page"] == 
         search1, search2, search3, search4 = st.columns([1,1,1,1,])
 
         with search1:
-            search_assignee = st.selectbox("Assignee", assginee_list,key="search_assignee")
+            search_assignee = st.selectbox("Assignee", assignee_list,key="search_assignee")
         with search2:
             search_severity = st.selectbox("Severity", ["All", "Low", "Medium", "High", "Severe"],key="search_severity")
         with search3: 
@@ -216,10 +303,29 @@ if st.session_state["role"] == "supervisor" and not st.session_state["page"] == 
                 st.write(t["severity"])
 
             with col7:
-                if st.button("Open Ticket", key=f"open_{t['id']}"):
-                    st.session_state["selected_ticket"] = t
-                    st.session_state["view"] = "ticket_detail"
-                    st.rerun()
+    
+                new_assignee = st.selectbox(
+                "Assign",
+                assignee_list,
+                index=assignee_list.index(t["assignee"]) if t["assignee"] in assignee_list else 0,
+                key=f"assignee_{t['id']}"
+            )
+
+    # Update button
+    if st.button("Update", key=f"update_{t['id']}"):
+        t["assignee"] = new_assignee
+        overwrite_json("tickets.json", tickets)
+        st.success(f"Ticket {t['id']} updated!")
+        time.sleep(1)
+        st.rerun()
+
+    # Delete button
+    if st.button("Delete", key=f"delete_{t['id']}"):
+        tickets.remove(t)  # remove ticket from list
+        overwrite_json("tickets.json", tickets)
+        st.warning(f"Ticket {t['id']} deleted!")
+        time.sleep(1)
+        st.rerun()
 
 #CREATE A NEW PROFILE ------------------------------------------------------------------------------------------------------
 if st.session_state["role"] == "supervisor" and st.session_state["page"] == "supervisor_make_acct":
@@ -373,15 +479,10 @@ else:
                 else:
                     st.session_state["page"] = "supervisor_main"
                     wait_rerun()
-
-
-
-
-
-
-
-
-
-
-
-
+        
+        if st.button("Ticket View"):
+            st.session_state["role"] = "staff"
+            wait_rerun()
+        if st.button("Supervisor Views"):
+            st.session_state["role"] = "supervisor"
+            wait_rerun()
