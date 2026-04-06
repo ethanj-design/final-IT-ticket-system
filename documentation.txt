@@ -1,0 +1,16 @@
+
+
+wait_rerun(): 
+    Sleep for 2 seconds, then rerun the app.
+
+format_phone(number): 
+    Formats inputted phone numbers from the user creator portal on the supervisor view. Supervisors input unformatted numbers. 
+    "Len(number) = 10" must be true or an error shows. If the number is not 10, either a full number isn't added or there is formatting.
+
+var_x = load_json(file_path):
+    Loads a json file path into a variable called "data". The data variable then dumps the content into var_x.
+
+overwrite_json(file_path, data):
+    Quick overwrite tool. file_path is the JSON file to dump the new information to. Data is the variable with the updated information.
+
+    
