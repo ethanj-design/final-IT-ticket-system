@@ -65,4 +65,70 @@ class StaffUI:
                                                                   key = 'hardware_select_ticketform')
             short_desc = st.text_input('Short Description of the Problem (Required)',
                                        placeholder = 'Ex: printer won\'t print', key = 'short_desc_ticketform')
+            long_desc = st.text_area('Deeper description of the issue (Optional)', 
+                                     key = 'long_desc_ticketform')
+            error_desc = st.text_area('Error Message (If Applicable)', placeholder = 'Paste here',
+                                      key = 'error_desc_ticketform')
+            submit_btn = st.button('Submit Ticket', use_container_width = True)
+
+        if submit_btn:
+            with st.spinner('Submitting ticket...'):
+                time.sleep(2)
+                try:
+                    employee = self.employee_manager.get_by_email(st.session_state['email'])
+                    new_ticket = self.ticket_manager.add(
+                        email = st.session_state['email'],
+                        name = st.session_state['user'],
+                        phone = employee['phone'],
+                        department = employee['department'],
+                        problem_type = ticket_device,
+                        application = ticket_application,
+                        short_desc = short_desc,
+                        long_desc = long_desc,
+                        error_desc = error_desc,
+                        computer = employee['computer']
             
+                    )
+
+                    self.ticket_store.save(self.ticket_manager.all())
+                    st.success(f'Ticket {new_ticket['id']} created successfully!')
+                    time.sleep(2)
+                    st.rerun()
+                except ValueError as e:
+                    st.error(str(e))
+                    time.sleep(2)
+                    st.rerun()
+
+    def show_ai_assistant(self):
+        st.subheader("AI Assistant")
+
+        col1, col2 = st.columns([3, 1])
+        with col1:
+            st.caption('Try asking: My printer won\'t connect')
+        with col2:
+            if st.button('Clear Messages'):
+                st.session_state['chat_history'] = []
+                st.rerun()
+        with st.container(border = True, height = 250):
+            for message in st.session_state['chat_history']:
+                with st.chat_message(message['role']):
+                    st.write(message['content'])
+        user_input = st.chat_input('Ask a question...')
+        if user_input:
+            with st.spinner('Thinking...'):
+                st.session_state['chat_history'].append({'role': 'user', 'content': user_input})
+                time.sleep(1)
+                st.rerun()
+    
+    def get_ai_response(self, user_input: str) -> str:
+        user_input = user_input.lower()
+        best_match = None
+        best_score = 0
+
+        for item in PRESET_RESPONSES:
+            score = sum(1 for keyword in item['keywords'] if keyword in user_input)
+            if score > best_score:
+                best_score = score
+                best_match = item['response']
+            
+        return best_match if best_match else 'I\'m not sure about that issue. Please submit a ticket.'
