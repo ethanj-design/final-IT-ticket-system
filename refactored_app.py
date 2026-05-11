@@ -52,7 +52,6 @@ if st.session_state['logged_in']:
             if st.button('Ticket View'):
                 st.session_state['role'] = 'staff'
                 st.rerun()
-print(f"DEBUG: logged_in={st.session_state['logged_in']}, role={st.session_state['role']!r}, page={st.session_state['page']!r}")
 if not st.session_state['logged_in']:
     login_ui = LoginUI(employee_manager)
     login_ui.show()

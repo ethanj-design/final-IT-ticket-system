@@ -4,7 +4,6 @@ from typing import Dict, List, Optional
 class EmployeeManager:
     def __init__(self, initial_employees: List[Dict]) -> None:
         self.employees = initial_employees
-        print(f"DEBUG: EmployeeManager initialized with {len(initial_employees)} employees")
         if initial_employees:
             print(f"DEBUG: first employee email = {initial_employees[0].get('email')!r}")
 
@@ -12,7 +11,6 @@ class EmployeeManager:
         return list(self.employees)
     
     def get_by_email(self, email: str) -> Optional[Dict]:
-        print(f"DEBUG: get_by_email searching {len(self.employees)} employees for {email!r}")
         for e in self.employees:
             if e['email'] == email:
                 return e
@@ -20,7 +18,6 @@ class EmployeeManager:
     
     def validate_login(self, email: str, password: str) -> Optional[Dict]:
         employee = self.get_by_email(email)
-        print(f"DEBUG: lookup email={email!r}, found={employee}")
         if employee:
             print(f"DEBUG: stored pw={employee['password']!r}, entered pw={password!r}")
         if employee and employee['password'] == password:
