@@ -23,7 +23,7 @@ class SupervisorUI:
             self.show_dashboard()
         elif st.session_state['page'] == 'open_ticket':
             self.show_ticket_detail()
-        elif st.session_state['page'] == 'supervisor_make_account':
+        elif st.session_state['page'] == 'supervisor_make_acct':
             self.show_create_account()
 
     def show_dashboard(self):
@@ -78,7 +78,7 @@ class SupervisorUI:
             for t in filtered:
                 col1, col2, col3, col4, col5, col6, col7 = st.columns([1, 1, 1, 1, 1, 1, 1])
                 col1.write(t['id'])
-                col2.write(t['description'])
+                col2.write(t['descriptionShort'])
                 col3.write(t['assignee'])
                 col4.write(t['email'])
                 col5.write(t['status'])
@@ -123,19 +123,25 @@ class SupervisorUI:
             st.success('Ticket updated successfully!')
             time.sleep(2)
             st.rerun()
+        
+        if st.button("Exit Ticket"):
+            st.session_state['page'] = 'supervisor_main'
+            st.rerun()
 
     def show_create_account(self):
         st.markdown('Create a New User')
 
-        with st.container(border = False):
-            new_email = st.text_input('Create email address', placeholder = 'Ex: abc@fakecorp.com',
-                                      key = 'new_email')
-            new_name = st.text_input('Enter name', key = 'new_name')
-            new_password = st.text_input('Enter password', key = 'new_pass', type = 'password')
+        with st.container(border=False):
+            new_email = st.text_input('Create email address', placeholder='Ex: abc@fakecorp.com',
+                                    key='new_email')
+            new_name = st.text_input('Enter name', key='new_name')
+            new_password = st.text_input('Enter password', key='new_pass', type='password')
 
-            dept_col, role_col = st.columns([1,1])
+            dept_col, role_col = st.columns([1, 1])
             with dept_col:
-                new_department = st.selectbox('Select Department', ['Accounting', 'Marketing', 'IT', 'PMO Office'], key = 'dept_select')
+                new_department = st.selectbox('Select Department',
+                                            ['Accounting', 'Marketing', 'IT', 'PMO Office'],
+                                            key='dept_select')
             with role_col:
                 role_options = {
                     'Accounting': ['Staff', 'Partner'],
@@ -144,31 +150,31 @@ class SupervisorUI:
                     'PMO Office': ['Staff', 'Manager']
                 }
                 new_role = st.selectbox('Select a role', role_options[new_department])
-                new_phone = st.text_input('Enter phone number', key = 'new_phone', 
-                                          placeholder="Ex: 1234567890 (do NOT use () or '-')")
-                new_comp = st.text_input('Enter computer number', key = 'new_comp', placeholder = 'Ex: 0001')
-                
-                create_btn = st.button('Create Account', type = 'primary', use_container_width = True)
 
-                if create_btn:
-                    with st.spinner('Creating account...'):
-                        time.sleep(5)
-                        try:
-                            self.employee_manager.add(
-                                email = new_email,
-                                name = new_name,
-                                password = new_password,
-                                department = new_department,
-                                role = new_role,
-                                phone = new_phone,
-                                computer_number = new_comp
-                            )
-                            self.employee_store.save(self.employee_manager.all())
-                            st.success('Record created!')
-                            time.sleep(3)
-                            st.rerun()
-                        except ValueError as e:
-                            st.error(str(e))
-                            time.sleep(2)
-                            st.rerun()
- 
+            new_phone = st.text_input('Enter phone number', key='new_phone',
+                                    placeholder="Ex: 1234567890 (do NOT use () or '-')")
+            new_comp = st.text_input('Enter computer number', key='new_comp', placeholder='Ex: 0001')
+
+            create_btn = st.button('Create Account', type='primary', use_container_width=True)
+
+            if create_btn:
+                with st.spinner('Creating account...'):
+                    time.sleep(5)
+                    try:
+                        self.employee_manager.add(
+                            email=new_email,
+                            name=new_name,
+                            password=new_password,
+                            department=new_department,
+                            role=new_role,
+                            phone=new_phone,
+                            computer=new_comp
+                        )
+                        self.employee_store.save(self.employee_manager.all())
+                        st.success('Record created!')
+                        time.sleep(3)
+                        st.rerun()
+                    except ValueError as e:
+                        st.error(str(e))
+                        time.sleep(2)
+                        st.rerun()

@@ -12,9 +12,9 @@
         "descriptionShort": "Password Reset",
         "descriptionLong": "Forgot it! Sorry.",
         "errorDescription": "n/a",
-        "assignee": "Harsha Rao",
-        "status": "In Progress",
-        "severity": "Medium",
+        "assignee": "None",
+        "status": "New",
+        "severity": "Unassigned",
         "compNumber": "PC_0004",
         "openedTime": "N/A",
         "resolvedTime": "N/A"

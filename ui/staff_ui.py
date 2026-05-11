@@ -1,8 +1,27 @@
 import time
+import os
 import streamlit as st
+from dotenv import load_dotenv
+from openai import OpenAI
 from services.ticket_manager import TicketManager
 from services.employee_manager import EmployeeManager
 from data.ticket_store import TicketStore
+
+load_dotenv()
+api_key = os.getenv("OPENAI_API_KEY")
+client = OpenAI(api_key=api_key) if api_key else None
+
+def build_ai_prompt() -> str:
+    return (
+        "You are a helpful IT support assistant for an internal company ticketing system. "
+        "Help employees troubleshoot common IT issues like printers, VPN, login problems, "
+        "slow computers, software, and hardware. "
+        "Guardrails: "
+        "- Keep responses concise (2-4 sentences). "
+        "- Give clear, numbered steps when troubleshooting. "
+        "- If the issue sounds serious or you can't resolve it, tell the user to submit a ticket. "
+        "- Stay focused on IT support topics only."
+    )
 
 
 PRESET_RESPONSES = [
@@ -34,7 +53,7 @@ class StaffUI:
     
     def main(self):
         st.markdown(f'## Welcome Back, {st.session_state['user']}!')
-        tab1, tab2 = st.tabs(['Form'], ['AI Assistant'])
+        tab1, tab2 = st.tabs(['Form', 'AI Assistant'])
     
         if "chat_history" not in st.session_state:
             st.session_state['chat_history'] = []
@@ -109,26 +128,47 @@ class StaffUI:
             if st.button('Clear Messages'):
                 st.session_state['chat_history'] = []
                 st.rerun()
-        with st.container(border = True, height = 250):
+
+        with st.container(border=True, height=250):
             for message in st.session_state['chat_history']:
                 with st.chat_message(message['role']):
                     st.write(message['content'])
+
         user_input = st.chat_input('Ask a question...')
         if user_input:
+            st.session_state['chat_history'].append({'role': 'user', 'content': user_input})
             with st.spinner('Thinking...'):
-                st.session_state['chat_history'].append({'role': 'user', 'content': user_input})
-                time.sleep(1)
-                st.rerun()
+                response = self.get_ai_response(user_input)
+                st.session_state['chat_history'].append({'role': 'assistant', 'content': response})
+            st.rerun()
     
     def get_ai_response(self, user_input: str) -> str:
-        user_input = user_input.lower()
+        # First, check preset responses for common IT issues
+        lowered = user_input.lower()
         best_match = None
         best_score = 0
-
         for item in PRESET_RESPONSES:
-            score = sum(1 for keyword in item['keywords'] if keyword in user_input)
+            score = sum(1 for keyword in item['keywords'] if keyword in lowered)
             if score > best_score:
                 best_score = score
                 best_match = item['response']
-            
-        return best_match if best_match else 'I\'m not sure about that issue. Please submit a ticket.'
+        if best_match:
+            return best_match
+
+        # Fall back to OpenAI for anything not covered by presets
+        if client is None:
+            return "OpenAI API key not configured. Please submit a ticket and IT will follow up."
+
+        try:
+            messages = [{"role": "system", "content": build_ai_prompt()}]
+            for msg in st.session_state['chat_history']:
+                messages.append({"role": msg['role'], "content": msg['content']})
+
+            response = client.chat.completions.create(
+                model="gpt-5-mini",
+                messages=messages,
+                temperature=1
+            )
+            return response.choices[0].message.content
+        except Exception as e:
+            return f"I'm having trouble reaching the AI right now. Please submit a ticket. (Error: {str(e)})"

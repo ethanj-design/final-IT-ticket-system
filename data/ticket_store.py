@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Dict, List
 
 class TicketStore:
-    def __9init__(self, json_path: Path) -> None:
+    def __init__(self, json_path: Path) -> None:
         self.json_path = json_path
 
     def load(self) -> List[Dict]:

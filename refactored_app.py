@@ -29,8 +29,8 @@ ticket_store = TicketStore(Path('tickets.json'))
 employee_manager = EmployeeManager(employee_store.load())
 ticket_manager = TicketManager(ticket_store.load())
 
-if st.session_state['page'] == 'login':
-    with st.sidebar():
+if st.session_state['logged_in']:
+    with st.sidebar:
         if st.button('Logout'):
             with st.spinner('Logging out...'):
                 time.sleep(2)
@@ -42,19 +42,17 @@ if st.session_state['page'] == 'login':
                 st.rerun()
 
         if st.session_state['role'] == 'supervisor':
+            
             if st.button('Switch Supervisor View', type = 'primary'):
                 if st.session_state['page'] != 'supervisor_make_acct':
                     st.session_state['page'] = 'supervisor_make_acct'
                 else:
                     st.session_state['page'] = 'supervisor_main'
                 st.rerun()
-            if st.session_state['page'] == 'open_ticket':
-                if st.button('Leave Page', type = 'primary', key = 'leave_page'):
-                    st.session_state['page'] = 'supervisor_main'
-                    st.rerun()
             if st.button('Ticket View'):
                 st.session_state['role'] = 'staff'
                 st.rerun()
+print(f"DEBUG: logged_in={st.session_state['logged_in']}, role={st.session_state['role']!r}, page={st.session_state['page']!r}")
 if not st.session_state['logged_in']:
     login_ui = LoginUI(employee_manager)
     login_ui.show()
