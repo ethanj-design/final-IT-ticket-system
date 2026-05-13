@@ -16,10 +16,10 @@ class TicketManager:
         return None
     
     def get_open_tickets(self) -> List[Dict]:
-        return [t for t in self.tickets if t['status'] in ('New', 'Open')]
+        return [t for t in self.tickets if t.get('status') in ('New', 'Open')]
     
     def get_tickets_by_assignee(self, asignee_name: str) -> List[Dict]:
-        return [t for t in self.tickets if t['assignee'] == asignee_name]
+        return [t for t in self.tickets if t.get['assignee'] == asignee_name]
     
     def filter(self, assignee: str = "None", severity: str = "All", 
                department: str = "All", status: str = "All") -> List[Dict]:
