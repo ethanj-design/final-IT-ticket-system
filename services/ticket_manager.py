@@ -52,6 +52,8 @@ class TicketManager:
             "descriptionLong": long_desc or "N/A",
             "errorDescription": error_desc or "N/A",
             "assignee": "Unassigned",
+            "status": "New",
+            "severity": "Medium",
             "compNumber": computer,
             "openedTime": "N/A",
             "resolvedTime": "N/A" 
