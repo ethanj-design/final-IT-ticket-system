@@ -17,7 +17,7 @@ class SupervisorUI:
         self.assignee_list = ASSIGNEE_BASE + self.employee_manager.get_it_staff_names()
 
     def main(self):
-        st.markdown(f'### Welcome Back, {st.session_state['user']}!')
+        st.markdown(f'### Welcome Back, {st.session_state['user']}!")
 
         if st.session_state['page'] == 'supervisor_main':
             self.show_dashboard()
@@ -81,7 +81,7 @@ class SupervisorUI:
                 col2.write(t['descriptionShort'])
                 col3.write(t['assignee'])
                 col4.write(t['email'])
-                col5.write(t['status']
+                col5.write(t['status'])
                 col6.write(t['severity'])
                 with col7:
                     if st.button('Open Ticket', type = 'primary', key = f'open_ticket_btn_{t['id']}'):
@@ -114,7 +114,7 @@ class SupervisorUI:
 
         st.subheader('Update Ticket')
         assignee = st.selectbox('Assignee', self.assignee_list)
-        status = st.selectbox("Status", ["New", "In Progress", "Resolved", "Closed"])
+        status = st.selectbox("Status", ["All", "New", "Open", "Resolved"])
         severity = st.selectbox("Severity", ["Unassigned", "Low", "Medium", "High", "Critical"])
 
         if st.button('Save Changes'):
