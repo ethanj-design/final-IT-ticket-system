@@ -17,7 +17,7 @@ class SupervisorUI:
         self.assignee_list = ASSIGNEE_BASE + self.employee_manager.get_it_staff_names()
 
     def main(self):
-        st.markdown(f'### Welcome Back, {st.session_state['user']}!")
+        st.markdown(f'### Welcome Back, {st.session_state['user']}!')
 
         if st.session_state['page'] == 'supervisor_main':
             self.show_dashboard()
