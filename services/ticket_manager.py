@@ -45,6 +45,8 @@ class TicketManager:
             "phone": phone,
             "date": datetime.today().strftime('%Y-%m-%d'),
             "time": time.strftime('%H:%M:%S'),
+            "status": "New"
+            "Severity": "Unassigned"
             "department": department.lower(),
             "problemType": problem_type,
             "application": application,
