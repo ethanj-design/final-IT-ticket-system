@@ -8,7 +8,7 @@ from services.employee_manager import EmployeeManager
 from data.ticket_store import TicketStore
 
 load_dotenv()
-api_key = os.getenv("OPENAI_API_KEY")
+api_key = st.secrets("OPENAI_API_KEY")
 client = OpenAI(api_key=api_key) if api_key else None
 
 def build_ai_prompt() -> str:
