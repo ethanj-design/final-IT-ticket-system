@@ -81,7 +81,7 @@ class SupervisorUI:
                 col2.write(t['descriptionShort'])
                 col3.write(t['assignee'])
                 col4.write(t['email'])
-                col5.write(t.get('status', 'New'))
+                col5.write(t['status']
                 col6.write(t['severity'])
                 with col7:
                     if st.button('Open Ticket', type = 'primary', key = f'open_ticket_btn_{t['id']}'):
