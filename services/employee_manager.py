@@ -29,7 +29,7 @@ class EmployeeManager:
     
     def add(self, email: str, name: str, password: str, department: str,
             role: str, phone: str, computer: str) -> Dict:
-        if not email.strip or name.strip():
+        if not email.strip() or not name.strip():
             raise ValueError("Email and name are required.")
         if len(phone) != 10 or not phone.isdigit():
             raise ValueError("Phone number must be exactly 10 digits.")
