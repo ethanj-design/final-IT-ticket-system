@@ -71,7 +71,7 @@ class TicketManager:
                 if status == "Resolved" and t['resolvedTime'] == 'N/A':
                     t['resolvedTime'] = datetime.now().strftime(("%Y-%m-%d %H:%M:%S"))
                 return t
-            return None
+        return None
     
 
         
