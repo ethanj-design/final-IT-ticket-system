@@ -21,6 +21,9 @@ class TicketManager:
     def get_tickets_by_assignee(self, asignee_name: str) -> List[Dict]:
         return [t for t in self.tickets if t['assignee'] == asignee_name]
     
+    def get_tickets_by_submitee(self, submittee_name: str) -> List[Dict]:
+        return [t for t in self.tickets if t['name'] == submittee_name]
+    
     def filter(self, assignee: str = "None", severity: str = "All", 
                department: str = "All", status: str = "All") -> List[Dict]:
          return [
@@ -53,21 +56,25 @@ class TicketManager:
             "errorDescription": error_desc or "N/A",
             "assignee": "Unassigned",
             "status": "New",
-            "severity": "Medium",
+            "severity": "Unassigned",
             "compNumber": computer,
             "openedTime": "N/A",
-            "resolvedTime": "N/A" 
+            "resolvedTime": "N/A",
+            "notes": "N/A"
         }
         self.tickets.append(new_ticket)
         return new_ticket
     
     def update(self, ticket_id: str, assignee: str, status: str,
-               severity: str) -> Optional[Dict]:
+               severity: str, openedTime: str, resolvedTime: str, notes: str ) -> Optional[Dict]:
         for t in self.tickets:
             if t['id'] == ticket_id:
                 t['assignee'] = assignee
                 t['status'] = status
                 t['severity'] = severity
+                t['openedTime'] = openedTime
+                t['resolvedTime'] = resolvedTime
+                t['notes'] = notes
                 if status == "Resolved" and t['resolvedTime'] == 'N/A':
                     t['resolvedTime'] = datetime.now().strftime(("%Y-%m-%d %H:%M:%S"))
                 return t

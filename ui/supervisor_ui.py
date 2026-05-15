@@ -4,17 +4,22 @@ from services.ticket_manager import TicketManager
 from services.employee_manager import EmployeeManager
 from data.ticket_store import TicketStore
 from data.employee_store import EmployeeStore
+from services.audit_manager import AuditManager
+from data.audit_store import audit_store
+from datetime import datetime
 
 ASSIGNEE_BASE = ['None', 'Unassigned']
 
 class SupervisorUI:
     def __init__(self, ticket_manager: TicketManager, ticket_store: TicketStore,
-                 employee_manager: EmployeeManager, employee_store: EmployeeStore) -> None:
+                 employee_manager: EmployeeManager, employee_store: EmployeeStore, audit_manager: AuditManager, audit_store: audit_store) -> None:
         self.ticket_manager = ticket_manager
         self.ticket_store = ticket_store
         self.employee_manager = employee_manager
         self.employee_store = employee_store
         self.assignee_list = ASSIGNEE_BASE + self.employee_manager.get_it_staff_names()
+        self.audit_manager = audit_manager
+        self.audit_store = audit_store
 
     def main(self):
         st.markdown(f'### Welcome Back, {st.session_state['user']}!')
@@ -92,12 +97,37 @@ class SupervisorUI:
     
     def show_ticket_detail(self):
         ticket = self.ticket_manager.get_by_id(st.session_state['opened_button'])
+        audit = self.audit_manager.get_by_id(st.session_state['opened_button'])
         if not ticket:
             st.error('Ticket not found.')
             return
-        
-        st.title(f'Ticket: {ticket["id"]}')
 
+        assignee = None
+        status = None
+        severity = None
+        
+        st.markdown(f'Ticket: {ticket["id"]}')
+
+        st.subheader('Audit Log')
+
+        with st.container(border=True):
+            h1,h2,h3,h4,h5 = st.columns([1,1,1,1,1])
+            h1.write("Timestamp")
+            h2.write("New Assignee")
+            h3.write("New Status")
+            h4.write("New Severity")
+            h5.write("New Notes")
+            
+            for a in audit:
+                h1.write(a["timestamp"])
+                if a["assignee"] != "N/A":
+                    h2.write(a["assignee"])
+                if a["status"] != "N/A":
+                    h3.write(a["status"])
+                if a["severity"] != "N/A":
+                    h4.write(a["severity"])
+                h5.write(a["notes"])
+            
         st.subheader('User Info')
         col1, col2 = st.columns(2)
         with col1:
@@ -113,13 +143,65 @@ class SupervisorUI:
         st.text_area('Description (more)', ticket['descriptionLong'], disabled = True)
 
         st.subheader('Update Ticket')
-        assignee = st.selectbox('Assignee', self.assignee_list)
-        status = st.selectbox("Status", ["All", "New", "Open", "Resolved"])
-        severity = st.selectbox("Severity", ["Unassigned", "Low", "Medium", "High", "Critical"])
+        ccol1, ccol2, ccol3 = st.columns([1,1,1])
+        with ccol1:
+            if ticket['assignee'] == "Unassigned":
+                assignee = st.selectbox('Assignee', self.assignee_list)
+            status = st.selectbox("Status", ["All", "New", "Open", "Resolved"])
+            if ticket['severity'] == "Unassigned":
+                severity = st.selectbox("Severity", ["Unassigned", "Low", "Medium", "High", "Critical"])
+        newNotes = st.text_input("Notes for Update", key="update_notes")
+        
+
 
         if st.button('Save Changes'):
-            self.ticket_manager.update(ticket['id'], assignee, status, severity)
+            openedTime = ticket.get('openedTime')
+            resolvedTime = ticket.get('resolvedTime')
+            notes = newNotes
+
+            if not assignee:
+                assignee = ticket['assignee']
+                auditAssignee = "N/A"
+            else:
+                auditAssignee = assignee
+
+            if not severity:
+                severity = ticket['severity']
+                auditSeverity = "N/A"
+            else:
+                auditSeverity = severity
+
+            if status == ticket['status']:
+                auditStatus = "N/A"
+            else:
+                auditStatus = status
+
+            if status == "Open" and not openedTime:
+                openedTime = datetime.now()
+
+            elif status == "Resolved" and not resolvedTime:
+                resolvedTime = datetime.now()
+
+            self.ticket_manager.update(
+                ticket['id'],
+                assignee,
+                status,
+                severity,
+                openedTime,
+                resolvedTime,
+                notes
+            )
             self.ticket_store.save(self.ticket_manager.all())
+
+            self.audit_manager.add(
+                ticket_id=ticket['id'],
+                assignee=auditAssignee,
+                severity=auditSeverity,
+                status=auditStatus,
+                notes=notes
+            )
+            self.audit_store.save(self.audit_manager.all())
+
             st.success('Ticket updated successfully!')
             time.sleep(2)
             st.rerun()

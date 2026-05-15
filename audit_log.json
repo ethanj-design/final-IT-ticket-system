@@ -1,0 +1,29 @@
+[
+    {
+        "id": "9d176d5f-074b-4e1e-a9b2-d6aa434dd9d4",
+        "timestamp": "2026-05-14 22:35:45.934588",
+        "ticket_id": "TK-20260328142715",
+        "assignee": "Ethan Mlynarczyk",
+        "severity": "Low",
+        "status": "Open",
+        "notes": "N/A Secure password reset email sent. Expires in 48hrs"
+    },
+    {
+        "id": "adeef75e-a9ba-417d-81cf-c6d77260cc30",
+        "timestamp": "2026-05-14 22:46:03.047177",
+        "ticket_id": "TK-20260328142715",
+        "assignee": "N/A",
+        "severity": "N/A",
+        "status": "Resolved",
+        "notes": "Password confirmed changed."
+    },
+    {
+        "id": "5eac8016-6818-465a-9f06-b493d4aea577",
+        "timestamp": "2026-05-14 23:38:32.029074",
+        "ticket_id": "TK-20260514233047",
+        "assignee": "Rahul Patel",
+        "severity": "N/A",
+        "status": "Open",
+        "notes": "Ordered HDMI cord to supplement."
+    }
+]

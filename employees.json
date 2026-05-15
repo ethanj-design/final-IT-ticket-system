@@ -53,5 +53,16 @@
         "role": "supervisor",
         "computer": "PC_0002",
         "status": "active"
+    },
+    {
+        "employee_id": "865bf1e2-bd48-46cb-96d8-3c15a6ebb07a",
+        "email": "employee",
+        "password": "testpass",
+        "phone": "302-981-3373",
+        "name": "Employee_Test",
+        "department": "marketing",
+        "role": "staff",
+        "computer": "PC_6767",
+        "status": "active"
     }
 ]

@@ -1,13 +1,15 @@
 import time
 import os
 import streamlit as st
-from dotenv import load_dotenv
 from openai import OpenAI
 from services.ticket_manager import TicketManager
 from services.employee_manager import EmployeeManager
 from data.ticket_store import TicketStore
+from services.audit_manager import AuditManager
+from data.audit_store import audit_store
+from datetime import datetime
 
-load_dotenv()
+
 api_key = st.secrets["OPENAI_API_KEY"]
 client = OpenAI(api_key=api_key) if api_key else None
 
@@ -46,23 +48,99 @@ PRESET_RESPONSES = [
 
 class StaffUI:
     def __init__(self, ticket_manager: TicketManager, ticket_store: TicketStore,
-                 employee_manager: EmployeeManager) -> None:
+                 employee_manager: EmployeeManager, audit_manager: AuditManager, audit_store: audit_store) -> None:
         self.ticket_manager = ticket_manager
         self.ticket_store = ticket_store
         self.employee_manager = employee_manager
+        self.audit_manager = audit_manager
+        self.audit_store = audit_store
     
     def main(self):
         st.markdown(f'## Welcome Back, {st.session_state['user']}!')
-        tab1, tab2 = st.tabs(['Form', 'AI Assistant'])
+        tab1, tab2, tab3 = st.tabs(['Home', 'Manual Ticket', 'AI Assistant'])
     
         if "chat_history" not in st.session_state:
             st.session_state['chat_history'] = []
         
         with tab1:
-            self.show_ticket_form()
+            self.show_home_page()
         with tab2:
+            self.show_ticket_form()
+        with tab3:
             self.show_ai_assistant()
     
+
+    def show_home_page(self):
+        user_tickets = self.ticket_manager.get_tickets_by_submitee(st.session_state['user'])
+        ticket = self.ticket_manager.get_by_id(st.session_state['opened_button'])
+        audit = self.audit_manager.get_by_id(st.session_state['opened_button'])
+
+        st.markdown("## Home Page")
+
+        ccol1, ccol2, ccol3 = st.columns([1,1,1])
+
+        unopened_counter = 0
+        for i in user_tickets:
+            if i["status"] == "New":
+                unopened_counter +=1
+        
+        resolved_counter = 0
+        for i in user_tickets:
+            if i["resolvedTime"] != "N/A":
+                resolved_counter +=1
+        
+        st.subheader("Selected Ticket: Audit Log")
+        with st.container(border=True):
+            h1,h2,h3,h4,h5 = st.columns([1,1,1,1,1])
+            h1.write("Timestamp")
+            h2.write("New Assignee")
+            h3.write("New Status")
+            h4.write("New Severity")
+            h5.write("New Notes")
+            
+            for a in audit:
+                h1.write(a["timestamp"])
+                if a["assignee"] != "N/A":
+                    h2.write(a["assignee"])
+                if a["status"] != "N/A":
+                    h3.write(a["status"])
+                if a["severity"] != "N/A":
+                    h4.write(a["severity"])
+                h5.write(a["notes"])
+        
+        
+        with ccol1:
+            st.metric('Your Tickets', value = len(user_tickets))
+        with ccol2:
+            st.metric('Unresolved', value=unopened_counter)
+        with ccol3:
+            st.metric("Closed", value = resolved_counter)
+
+        st.markdown("### Your Current Tickets")
+
+        with st.container(border = True):
+            h1, h2, h3, h4, h5, h6, h7 = st.columns([1, 1, 1, 1, 1, 1, 1])
+            h1.write('ID')
+            h2.write('Description')
+            h3.write('Assignee')
+            h4.write('Status')
+            h5.write('Severity')
+            h6.write('Notes')
+            h7.write("View Log")
+
+            for t in user_tickets:
+                col1, col2, col3, col4, col5, col6, col7 = st.columns([1, 1, 1, 1, 1, 1, 1])
+                col1.write(t['id'])
+                col2.write(t['descriptionShort'])
+                col3.write(t['assignee'])
+                col4.write(t['status'])
+                col5.write(t['severity'])
+                col6.write(t['notes']) 
+                with col7:
+                    if st.button('View Log', type = 'primary',key = f'open_ticket_btn_{t['id']}'):
+                            st.session_state['opened_button'] = t['id']
+                            st.rerun()
+
     def show_ticket_form(self):
         st.markdown('Ticket Creation Form')
 
